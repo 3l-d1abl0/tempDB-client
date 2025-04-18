@@ -21,8 +21,6 @@ int  argumentsCheck(int argc, char* argv[]){
         std::cerr <<usageInfo;
         return EXIT_FAILURE;
     }
-
-    std::cout<<(std::string(argv[1]) == "-h")<<std::endl;
     
     //Check for host or h
     if(std::string(argv[1]) != "-h" && std::string(argv[1]) != "-host"){
@@ -64,12 +62,15 @@ int main(int argc, char* argv[]) {
     hints.ai_family = AF_INET;       // IPv4
     hints.ai_socktype = SOCK_STREAM; // TCP
 
+    std::cout<<"Resolving hostname ..."<<std::endl;
     std::string service = std::to_string(port);
     if (getaddrinfo(host.c_str(), service.c_str(), &hints, &res) != 0) {
         std::cerr << "Error: Could not resolve hostname: " << host << std::endl;
         return EXIT_FAILURE;
     }
+    //std::cout<<res->ai_addr<<" "<<res->ai_addrlen<<" "<<res->ai_family<<" "<<res->ai_socktype<<" "<<res->ai_protocol<<std::endl;
 
+    std::cout<<"Creating socket ..."<<std::endl;
     // Create a TCP socket
     int sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (sock < 0) {
@@ -78,6 +79,7 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
+    std::cout<<"Connecting to Server ..."<<std::endl;
     // Connect to the server
     if (connect(sock, res->ai_addr, res->ai_addrlen) < 0) {
         std::cerr << "Error: Connection failed" << std::endl;
@@ -87,7 +89,6 @@ int main(int argc, char* argv[]) {
     }
 
     freeaddrinfo(res); // Free the memory allocated by getaddrinfo
-
 
     std::cout << "Connected to " << host << ":" << port << " successfully!" << std::endl;
 
