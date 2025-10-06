@@ -1,18 +1,28 @@
 #include <iostream>
-#include <vector>
-#include <utility>
-#include <string>
+#include <cstdlib>
 
-#include "Cli.h"
+#include "Cli.hpp"
 
 int main(int argc, char* argv[]) {
 
-    std::pair<bool, std::vector<std::string>> args = argumentsCheck(argc, argv);
-    
-    std::cout<<args.first<<std::endl;
-    for(std::string val: args.second){
-        std::cout<<val<<std::endl;
-    }
+    try {
+        // Parse command line arguments
+        auto argParseResult = tempdb::Cli::parseArguments(argc, argv);
 
-    return 0;
+        if (!argParseResult.success) {
+            std::cerr << argParseResult.errorMessage << std::endl;
+            return EXIT_FAILURE;
+        }
+
+        std::cout << "Connecting to " << argParseResult.host << ":" << argParseResult.port << "..." << std::endl;
+
+        return EXIT_SUCCESS;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return EXIT_FAILURE;
+    } catch (...) {
+        std::cerr << "Unknown error occurred" << std::endl;
+        return EXIT_FAILURE;
+    }
 }
