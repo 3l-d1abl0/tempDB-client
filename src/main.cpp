@@ -11,6 +11,7 @@ int main(int argc, char* argv[]) {
 
         if (!argParseResult.success) {
             std::cerr << argParseResult.errorMessage << std::endl;
+            tempdb::Cli::displayUsage(argv[0]);
             return EXIT_FAILURE;
         }
 

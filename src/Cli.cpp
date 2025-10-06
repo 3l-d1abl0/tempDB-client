@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
+#include <iostream>
 
 namespace tempdb {
 
@@ -84,7 +85,20 @@ void Cli::validateHost(const std::string& host) {
             throw std::invalid_argument("Host contains invalid characters. Only alphanumeric, dots, hyphens, and colons are allowed");
         }
     }
+    
 }
 
+void Cli::displayUsage(const std::string& programName) {
+    std::cout << "Usage: " << programName << " -h <host-ip> -p <port>" << std::endl;
+    std::cout << "   OR: " << programName << " -host <host-ip> -port <port>" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Options:" << std::endl;
+    std::cout << "  -h, -host <host>    Server hostname or IP address" << std::endl;
+    std::cout << "  -p, -port <port>    Server port number (1-65535)" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Examples:" << std::endl;
+    std::cout << "  " << programName << " -h localhost -p 6379" << std::endl;
+    std::cout << "  " << programName << " -host 127.0.0.1 -port 9000" << std::endl;
+}
 
 } // namespace tempdb
