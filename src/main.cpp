@@ -2,6 +2,7 @@
 #include <cstdlib>
 
 #include "Cli.hpp"
+#include "Client.hpp"
 
 int main(int argc, char* argv[]) {
 
@@ -17,7 +18,13 @@ int main(int argc, char* argv[]) {
 
         std::cout << "Connecting to " << argParseResult.host << ":" << argParseResult.port << "..." << std::endl;
 
-        return EXIT_SUCCESS;
+        // Create and run the client
+        auto client = std::make_unique<tempdb::Client>(argParseResult.host, argParseResult.port);
+
+        int exitCode = client->run();
+
+        std::cout << "Client session ended." << std::endl;
+        return exitCode;
 
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
