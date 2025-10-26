@@ -1,5 +1,6 @@
 #include "Client.hpp"
 
+#include <algorithm>
 #include <codecvt>
 #include <iostream>
 #include <ostream>
@@ -46,9 +47,23 @@ namespace tempdb {
             return false;
         }
 
-        std::cout << input<<std::endl;
+        //std::cout << input<<std::endl;
 
-        if (!sendCommand(input)) {
+                        // Convert input to RESP format
+        auto tokens = protocol_.splitInput(input);
+        if (tokens.empty()) {
+            return true;
+        }
+
+        // UserInut - Splitted
+        // for (const auto& str : tokens) {
+        //     std::cout << str << "_";
+        // }
+        // std::cout<<"\n";
+
+        //RESP Encoding
+        std::string respCommand = protocol_.encodeArray(tokens);
+        if (!sendCommand(respCommand)) {
             return false;
         }
 
@@ -61,9 +76,8 @@ namespace tempdb {
 
     bool Client::sendCommand(const std::string& command) {
         try {
-
             std::string commandWithNewline = command + "\n";
-            std::cout<<"Sending Command ..."<<commandWithNewline<<std::endl;
+            //std::cout<<"Sending Command ..."<<commandWithNewline<<std::endl;
             network_->sendData(commandWithNewline);
             return true;
         } catch (const std::runtime_error& e) {
@@ -77,7 +91,7 @@ namespace tempdb {
         const size_t bufferSize = 1024;
         char buffer[bufferSize];
 
-        std::cout<<"RECIEVING: "<<std::endl;
+        //std::cout<<"RECIEVING: "<<std::endl;
         try {
 
             int bytesReceived = network_->receiveData(buffer, bufferSize);
@@ -87,8 +101,16 @@ namespace tempdb {
                 return false;
             }
 
-            std::cout<<"RECIEVED: "<<std::endl;
-            std::cout << buffer << std::endl;
+            std::cout<<bytesReceived<<std::endl;
+            std::cout<<buffer<<std::endl;
+            std::string response(buffer);
+
+            // Parse the response
+            auto parsedResponse = protocol_.parseResponse(response);
+
+            // Display human-readable response
+            std::string humanResponse = protocol_.humanize(parsedResponse);
+            std::cout << humanResponse << std::endl;
 
             return true;
         } catch (const std::runtime_error& e) {

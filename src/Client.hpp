@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "Network.hpp"
+#include "RespProtocol.hpp"
 
 namespace tempdb {
 
@@ -57,6 +58,7 @@ namespace tempdb {
         std::string host_;                         ///< Server hostname
         int port_;                                 ///< Server port
         bool connected_;                           ///< Connection status
+        RespProtocol protocol_;                    ///< RESP protocol handler
     };
 
 } // namespace tempdb

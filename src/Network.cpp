@@ -93,12 +93,14 @@ namespace tempdb {
             throw std::runtime_error("Not connected to server");
         }
 
-        int bytes_received = recv(sock_, buffer, bufferSize - 1, 0);
+        //int bytes_received = recv(sock_, buffer, bufferSize - 1, 0);
+        int bytes_received = recv(sock_, buffer, sizeof(buffer) - 1, 0);
         if (bytes_received < 0) {
             connected_ = false;
             throw std::runtime_error("Error: Failed to receive data from server");
         } else if (bytes_received == 0) {
             connected_ = false;
+            std::cerr << "Error: Server closed the connection" << std::endl;
             return 0; // Server closed connection
         }
 
