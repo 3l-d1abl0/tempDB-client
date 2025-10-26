@@ -1,6 +1,8 @@
 #include "Client.hpp"
 
+#include <codecvt>
 #include <iostream>
+#include <ostream>
 
 
 namespace tempdb {
@@ -46,7 +48,54 @@ namespace tempdb {
 
         std::cout << input<<std::endl;
 
+        if (!sendCommand(input)) {
+            return false;
+        }
+
+        if (!receiveResponse()) {
+            return false;
+        }
+
         return true;
+    }
+
+    bool Client::sendCommand(const std::string& command) {
+        try {
+
+            std::string commandWithNewline = command + "\n";
+            std::cout<<"Sending Command ..."<<commandWithNewline<<std::endl;
+            network_->sendData(commandWithNewline);
+            return true;
+        } catch (const std::runtime_error& e) {
+            std::cerr << "Error sending command: " << e.what() << std::endl;
+            connected_ = false;
+            return false;
+        }
+    }
+
+    bool Client::receiveResponse() {
+        const size_t bufferSize = 1024;
+        char buffer[bufferSize];
+
+        std::cout<<"RECIEVING: "<<std::endl;
+        try {
+
+            int bytesReceived = network_->receiveData(buffer, bufferSize);
+            if (bytesReceived == 0) {
+                std::cerr << "Server closed the connection" << std::endl;
+                connected_ = false;
+                return false;
+            }
+
+            std::cout<<"RECIEVED: "<<std::endl;
+            std::cout << buffer << std::endl;
+
+            return true;
+        } catch (const std::runtime_error& e) {
+            std::cerr << "Error receiving response: " << e.what() << std::endl;
+            connected_ = false;
+            return false;
+        }
     }
 
     void Client::displayPrompt() {

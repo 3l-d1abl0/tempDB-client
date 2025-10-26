@@ -40,6 +40,9 @@ namespace tempdb {
         */
         bool processCommand(const std::string& input);
 
+
+        bool sendCommand(const std::string& command);
+        bool receiveResponse();
         /**
         * @brief Display connection information prompt
         */

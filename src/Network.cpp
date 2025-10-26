@@ -73,4 +73,37 @@ namespace tempdb {
         }
     }
 
+
+    ssize_t Network::sendData(const std::string& data) {
+        if (!connected_) {
+            throw std::runtime_error("Not connected to server");
+        }
+
+        ssize_t sent_bytes = send(sock_, data.c_str(), data.size(), 0);
+        if (sent_bytes < 0) {
+            connected_ = false;
+            throw std::runtime_error("Error: Connection lost while sending data");
+        }
+
+        return sent_bytes;
+    }
+
+    int Network::receiveData(char* buffer, size_t bufferSize) {
+        if (!connected_) {
+            throw std::runtime_error("Not connected to server");
+        }
+
+        int bytes_received = recv(sock_, buffer, bufferSize - 1, 0);
+        if (bytes_received < 0) {
+            connected_ = false;
+            throw std::runtime_error("Error: Failed to receive data from server");
+        } else if (bytes_received == 0) {
+            connected_ = false;
+            return 0; // Server closed connection
+        }
+
+        buffer[bytes_received] = '\0'; // Null-terminate
+        return bytes_received;
+    }
+
 } // namespace tempdb

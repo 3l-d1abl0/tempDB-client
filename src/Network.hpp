@@ -30,6 +30,10 @@ namespace tempdb {
         */
         ~Network();
 
+        ssize_t sendData(const std::string& data);
+
+        int receiveData(char* buffer, size_t bufferSize);
+
     private:
 
         /**
