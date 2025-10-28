@@ -1,7 +1,6 @@
 #include "Client.hpp"
 
-#include <algorithm>
-#include <codecvt>
+
 #include <iostream>
 #include <ostream>
 
@@ -76,9 +75,7 @@ namespace tempdb {
 
     bool Client::sendCommand(const std::string& command) {
         try {
-            std::string commandWithNewline = command + "\n";
-            //std::cout<<"Sending Command ..."<<commandWithNewline<<std::endl;
-            network_->sendData(commandWithNewline);
+            network_->sendData(command);
             return true;
         } catch (const std::runtime_error& e) {
             std::cerr << "Error sending command: " << e.what() << std::endl;
@@ -101,8 +98,6 @@ namespace tempdb {
                 return false;
             }
 
-            std::cout<<bytesReceived<<std::endl;
-            std::cout<<buffer<<std::endl;
             std::string response(buffer);
 
             // Parse the response
