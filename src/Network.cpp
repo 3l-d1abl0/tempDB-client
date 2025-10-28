@@ -89,12 +89,13 @@ namespace tempdb {
     }
 
     int Network::receiveData(char* buffer, size_t bufferSize) {
+
         if (!connected_) {
             throw std::runtime_error("Not connected to server");
         }
 
-        //int bytes_received = recv(sock_, buffer, bufferSize - 1, 0);
-        int bytes_received = recv(sock_, buffer, sizeof(buffer) - 1, 0);
+        int bytes_received = recv(sock_, buffer, bufferSize - 1, 0);
+        //int bytes_received = recv(sock_, buffer, sizeof(buffer) - 1, 0);
         if (bytes_received < 0) {
             connected_ = false;
             throw std::runtime_error("Error: Failed to receive data from server");
